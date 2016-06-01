@@ -41,12 +41,12 @@ class  Source{
 
                 $temp = array();
                 if(preg_match("/.*[1-5]\s*[*](?!\))/", $separatedText[$j], $temp)){
-                    array_push($this->notes[$i]->hotelNames, $temp);
+                    array_push($this->notes[$i]->hotelNames, $temp[0]);
                 }
 
-                if(preg_match("/(?<=([*],)).*/", $separatedText[$j], $temp)){
+                if(preg_match("/((?<=([*],))|(?<=([*]\s,))).*/", $separatedText[$j], $temp)){
                     $temp[0].=$separatedText[$j+1]; //добавляем знак валюты. ОН лежит в следующей строке
-                    array_push($this->notes[$i]->conditionsAndPrice, $temp);
+                    array_push($this->notes[$i]->conditionsAndPrice, $temp[0]);
                 }
 
             }
@@ -56,24 +56,24 @@ class  Source{
 
     public function showInfo(){
         foreach ($this->notes as $note){
-            echo 'Название тура : '.$note->name.'<br>';
-            echo 'Теги : ';
+            echo '<b>Название тура : </b>'.$note->name.'<br>';
+            echo '<b>Теги : </b>';
             echo $note->tags[0].'<br>';
-            echo 'Включено в тур : ';
+            echo '<b>Включено в тур : </b>';
             echo $note->includedInTour[0].'<br>';
             if($note->departureDate[0] != ''){
-                echo 'Дата вылета : '.$note->departureDate[0].'<br>';
+                echo '<b>Дата вылета : </b>'.$note->departureDate[0].'<br>';
             }
             if($note->additionally[0] != ''){
-                echo 'Доплнительно оплачивается : '.$note->additionally[0].'<br>';
+                echo '<b>Доплнительно оплачивается : </b>'.$note->additionally[0].'<br>';
             }
 
-            echo '<ul>Отели :';
+            echo '<ul><b>Отели :</b>';
             $step=0;
-            foreach ($note->hotelNames as $hotel){
-
-                echo '<li>'.$hotel[0].' | .'.$note->conditionsAndPrice[++$step][0].'</li>';
+            for ($i=0;$i<count($note->hotelNames); $i++){
+                echo '<li>'.$note->hotelNames[$i].' | .'.$note->conditionsAndPrice[$i].'</li>';
             }
+
             echo '</ul>';
 
 //            echo '<ul>Условия и цена :';
