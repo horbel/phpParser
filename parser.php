@@ -40,10 +40,26 @@ class  Source{
                 if(preg_match("/(.*[1-5]\s*[*][\s,]*(.*\)[,\s])*)(.*)/", $separatedText[$j], $temp)) {
                     $temp[3] .= $separatedText[$j + 1];
                     array_push($this->notes[$i]->hotelInfo[$count]->conditionsAndPrice, $temp[3]);
-                    while (preg_match("/^[,\s](.*)$/", $separatedText[$j + $k], $temp)) {
+                    $tempPriceAndCond = array();
+                    while (preg_match("/^[\s,](.*)$/", $separatedText[$j + $k], $temp)) {
                         $temp[1] .= $separatedText[$j + $k + 1]; //добавляем знак валюты. ОН лежит в следующей строке
                         $k = $k + 2;
+
                         array_push($this->notes[$i]->hotelInfo[$count]->conditionsAndPrice, $temp[1]);
+                    }
+
+                    foreach ($this->notes[$i]->hotelInfo[$count]->conditionsAndPrice as $cond){  //тут вытягиваем тип питания
+                        $tempPriceAndCond = explode(',', $cond);
+                        foreach ($tempPriceAndCond as $t){
+                            //echo $t.'<br>';
+
+                            if($t!='' && preg_match('/^[а-яА-Я]/', $t)){
+                                array_push($this->notes[$i]->hotelInfo[$count]->typeOfFood, $t);
+
+                            }
+
+                       }
+
                     }
                 }
 
@@ -72,10 +88,21 @@ class  Source{
             echo '<ul><b>Отели :</b>';
             for ($i=0;$i<count($note->hotelInfo); $i++){
                 echo '<li>'.$note->hotelInfo[$i]->hotelNames[0].'<br>';
+
+                for ($m=0; $m<count($note->hotelInfo[$i]->typeOfFood); $m++){
+                    echo '<b>Тип питания : </b>'.$note->hotelInfo[$i]->typeOfFood[$m].'<br>';
+                }
+
+
                 for($h=0; $h<count($note->hotelInfo[$i]->conditionsAndPrice); $h++){
                     echo $note->hotelInfo[$i]->conditionsAndPrice[$h].'<br>';
                 }
                 echo  '</li>';
+
+
+
+
+
             }
             echo '</ul>';
             echo '<hr>';
@@ -108,9 +135,12 @@ class HotelInfo{
     public $numberOfNights;
     public $price;
     public $conditionsAndPrice; // тип питания, количество ночей и стоимость
+    public $typeOfFood; //тип питания
     function __construct(){
         $this->conditionsAndPrice = array();
         $this->hotelNames = array();
+        $this->typeOfFood = array();
+
     }
 }
 $s = new Source();
